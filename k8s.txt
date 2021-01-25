@@ -1,0 +1,52 @@
+Practise Test Pods
+==========================
+
+Q. Create a new pod with the NGINX image
+kubectl run nginx --image=nginx
+
+Q. What is the image used to create the new pods?
+kubectl describe pod newpods-6fgdh | grep Image:
+
+-> Check I is capital in image
+
+Q.Which nodes are these pods placed on?
+$ kubectl get pods -o wide
+NAME            READY   STATUS    RESTARTS   AGE     IP           NODE     NOMINATED NODE   READINESS GATES
+newpods-6fgdh   1/1     Running   0          7m16s   10.244.1.5   node01   <none>           <none>
+newpods-f9qmj   1/1     Running   0          7m16s   10.244.1.4   node01   <none>           <none>
+newpods-jk9hx   1/1     Running   0          7m16s   10.244.1.3   node01   <none>           <none>
+nginx           1/1     Running   0          7m43s   10.244.1.2   node01   <none>           <none>
+
+Q. How many containers are part of the pod 'webapp'?
+controlplane $ kubectl get pods webapp
+NAME     READY   STATUS             RESTARTS   AGE
+webapp   1/2     ImagePullBackOff   0          84s
+
+Q. What images are used in the new 'webapp' pod?
+$ kubectl describe pod webapp | grep Image:
+    Image:          nginx
+    Image:          agentx
+
+Q.What is the state of the container 'agentx' in the pod 'webapp'?
+kubectl describe pod webapp	
+--Look for the value of field State
+
+Q. How to check running pods
+$ kubectl get pods
+NAME            READY   STATUS             RESTARTS   AGE
+newpods-6fgdh   1/1     Running            1          18m
+webapp          1/2     ImagePullBackOff   0          10m
+	
+Q. Delete the 'webapp' Pod.
+$ kubectl delete pod webapp
+pod "webapp" deleted
+
+Q. Create a new pod with the name 'redis' and with the image 'redis123'
+$ kubectl run redis --image=redis123
+$ kubectl run redis --image=redis123 --dry-run=client -o yaml > pod.yaml
+
+Update the image to redis
+update the running configuration of pod 
+$ kubectl edit pod redis
+
+That's it
