@@ -1,0 +1,68 @@
+Q. How many ReplicaSets exist on the system?(in default namespace)
+How many ReplicaSets exist on the system?
+
+Q. What is the image used to create the pods in the new-replica-set?
+$ kubectl describe replicaset new-replica-set| grep Image:
+ Image:      busybox777
+ 
+Q. Why do you think the PODs are not ready?
+Its two step process
+	First check the replicasets
+		kubectl get replicaset
+	Secondly, pick pod name and describe
+		kubectl describe pods <Podname>
+
+
+Troubleshooting
+-- If on replicasets it fails
+kubectl  apply -f replicaset-definition-1.yaml
+error: unable to recognize "replicaset-definition-1.yaml": no matches for kind "ReplicaSet" in version "v1"
+
+=> apiversion is not correct, how to check
+Q. How to check replicaset api Version
+$ kubectl explain replicaset | grep VERSION
+VERSION:  apps/v1
+
+Update from
+VERSION:  v1
+
+to
+VERSION:  apps/v1
+
+Q. Fix the issue in the replicaset-definition-2.yaml file and create a ReplicaSet using it.
+$ cat replicaset-definition-2.yaml -n
+     1  apiVersion: apps/v1
+     2  kind: ReplicaSet
+     3  metadata:
+     4    name: replicaset-2
+     5  spec:
+     6    replicas: 2
+     7    selector:
+     8      matchLabels:
+     9        tier: frontend
+    10    template:
+    11      metadata:
+    12        labels:
+    13          tier: nginx
+    14      spec:
+    15        containers:
+    16        - name: nginx
+    17          image: nginxcontrolplane 
+
+Line 9, 13 should match for tier
+
+Q. Fix the original replica set 'new-replica-set' to use the correct 'busybox' image
+Run the command 'kubectl edit replicaset new-replica-set', modify the image name and then save the file.
+And kill each pod in the replicaset
+
+OR
+kubectl get replicasets new-replica-set -o yaml > new.yaml
+kubectl delete replicasets new-replica-set
+kubectl get pods
+kubectl  apply -f new.yaml
+
+Q. Scale the ReplicaSet to 5 PODs
+Use 'kubectl scale' command or edit the replicaset using 'kubectl edit replicaset
+
+kubectl scale --replicas=5 replicaset new-replica-set
+kubectl get replicasets
